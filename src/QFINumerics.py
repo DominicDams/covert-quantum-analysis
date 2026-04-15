@@ -1,7 +1,6 @@
-from qutip import *
+import qutip as qt
 import numpy as np
 import scipy as sp
-import matplotlib.pyplot as plt
 from tqdm.autonotebook import trange
 import warnings
 
@@ -14,7 +13,7 @@ def QFI(rho,G):
     # Get the eigenstates, which gives us all the info we need to get the QFI
     (lambdas, Uw) = rho.eigenstates(output_type='oper')
     dims = G.dims
-    U = qutip.dimensions.from_tensor_rep(np.reshape(qutip.dimensions.to_tensor_rep(Uw),np.array(dims).flatten()),dims)
+    U = qt.dimensions.from_tensor_rep(np.reshape(qt.dimensions.to_tensor_rep(Uw),np.array(dims).flatten()),dims)
     Gp = U.dag()*G*U
     [lambda1,lambda2] = np.meshgrid(lambdas,lambdas)
 
@@ -22,7 +21,7 @@ def QFI(rho,G):
     # May be improved in the future, but works very well now
     matsize = [np.prod(dims[0]),np.prod(dims[1])]
     top = (lambda1-lambda2)**2
-    prod = np.abs(np.reshape(qutip.dimensions.to_tensor_rep(Gp),matsize))**2
+    prod = np.abs(np.reshape(qt.dimensions.to_tensor_rep(Gp),matsize))**2
     bot = lambda1 + lambda2
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message="invalid value encountered in divide")
@@ -40,40 +39,38 @@ def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
     idims = dims[2]
     wdims = dims[3]
     # Create our transformation, and our state to compare with
-    ath = tensor(destroy(thdims),identity(sdims))
-    asi = tensor(identity(thdims),destroy(sdims)) # can't call this as, because it's a keyword
+    ath = qt.tensor(qt.destroy(thdims),qt.identity(sdims))
+    asi = qt.tensor(qt.identity(thdims),qt.destroy(sdims)) # can't call this as, because it's a keyword
     G = theta *1j*(ath.dag()*asi +asi.dag()*ath)
     # Define the beamsplitter transform
     U = G.expm()
-    pth = thermal_dm(thdims,nth,method)
+    pth = qt.thermal_dm(thdims,nth,method)
     # Create a superoperator which performs the thermal mixing + tracing out
     S1=0
     for i in range(thdims):
-        fockn = fock(thdims,i)
+        fockn = qt.fock(thdims,i)
         pthket = pth*fockn
-        ql = tensor(identity(sdims),pthket).drop_scalar_dims(inplace=True)
-        qr = tensor(identity(sdims),fockn.dag()).drop_scalar_dims(inplace=True)
-        S1 = S1+sprepost(ql,qr)
-    S2 = sprepost(U,U.dag())*S1
-    S3 = tensor_contract(S2,(1,3))
+        ql = qt.tensor(qt.identity(sdims),pthket).drop_scalar_dims(inplace=True)
+        qr = qt.tensor(qt.identity(sdims),fockn.dag()).drop_scalar_dims(inplace=True)
+        S1 = S1+qt.sprepost(ql,qr)
+    S2 = qt.sprepost(U,U.dag())*S1
+    S3 = qt.tensor_contract(S2,(1,3))
     # Defines a map that turns a 3 mode pure mode to a mixture of two
     # mode pure states with classical witnesses
-    mixsup = sum([sprepost(fock_dm(wdims,i),fock_dm(wdims,i)) for i in range(wdims)])
+    mixsup = sum([qt.sprepost(qt.fock_dm(wdims,i),qt.fock_dm(wdims,i)) for i in range(wdims)])
     # Since each of these channels is a single field channel, we can
     # construct our whole channel via tensor product
-    chan = super_tensor(S3,to_super(identity(idims)),mixsup)
+    chan = qt.super_tensor(S3,qt.to_super(qt.identity(idims)),mixsup)
     return chan
 
 
 # In[4]:
 
 
-def searchForState(psi0=basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20000, dims=[5,5,5,6], params=[.1,.1]):
+def searchForState(psi0=qt.basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20000, dims=[5,5,5,6], params=[.1,.1]):
     # Set initial parameters
     eta = params[0]
-    theta = np.arccos(np.sqrt(eta))
     nth = params[1]
-    thdims = dims[0]
     sdims = dims[1]
     idims = dims[2]
     wdims = dims[3]
@@ -96,9 +93,9 @@ def searchForState(psi0=basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20000
     #    S1 = S1+sprepost(ql,qr)
     chan = genChannel(dims,params)#super_tensor(S3,to_super(identity(idims)),mixsup)
     # Define the thermal state when we mix in vacuum
-    pth0 = thermal_dm(sdims,(1-eta)*nth)
-    n = tensor(num(idims),identity(sdims),identity(wdims))
-    rho0 = vector_to_operator(chan*operator_to_vector(psi0.proj()))
+    pth0 = qt.thermal_dm(sdims,(1-eta)*nth)
+    n = qt.tensor(qt.num(idims),qt.identity(sdims),qt.identity(wdims))
+    rho0 = qt.vector_to_operator(chan*qt.operator_to_vector(psi0.proj()))
 
     state = psi0
     max_QFI = QFI(rho0,n)
@@ -107,9 +104,9 @@ def searchForState(psi0=basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20000
     #pr.enable()
     # rem = max_entropy
     for i in trange(iters):
-        newstate = (state + epsilon*rand_ket(overall_dims)).unit()
-        rho = vector_to_operator(chan*operator_to_vector(newstate.proj()))
-        rel_ent = entropy_relative(pth0,rho.ptrace([0]),tol=1e-50)
+        newstate = (state + epsilon*qt.rand_ket(overall_dims)).unit()
+        rho = qt.vector_to_operator(chan*qt.operator_to_vector(newstate.proj()))
+        rel_ent = qt.entropy_relative(pth0,rho.ptrace([0]),tol=1e-50)
         if(rel_ent <= max_entropy):
             FI = QFI(rho,n)
             if (FI >= max_QFI):
@@ -149,12 +146,12 @@ def calc_for_state(rho,n,As,args=[12,.1,.1]):
     # when we pass through the sample. Putting the sample before or after the mixing
     # yields identical results. Additionally since phase transformations are unitary
     # we don't need to worry about applying it at all.
-    pth = thermal_dm(thdims,nth)
-    pth0 = thermal_dm(rho.dims[0][0],(1-eta)*nth)
-    at = destroy(thdims)
-    G = theta*(tensor(at.dag(),As)+tensor(at,As.dag()))*1j
+    pth = qt.thermal_dm(thdims,nth)
+    pth0 = qt.thermal_dm(rho.dims[0][0],(1-eta)*nth)
+    at = qt.destroy(thdims)
+    G = theta*(qt.tensor(at.dag(),As)+qt.tensor(at,As.dag()))*1j
     U = G.expm()
-    st = tensor(pth, rho)
+    st = qt.tensor(pth, rho)
     stm = U*st*U.dag()
 
     # Tracing out the thermal mode should just involve doing a partial trace over
@@ -166,18 +163,18 @@ def calc_for_state(rho,n,As,args=[12,.1,.1]):
 
     # The adversary only has access to the signal mode when trying to determine
     # if we are making a measurement, so we trace over all other modes
-    rel_ent = entropy_relative(pth0,rhom.ptrace([0]),tol=1e-50)
+    rel_ent = qt.entropy_relative(pth0,rhom.ptrace([0]),tol=1e-50)
 
     FI = QFI(rhom,n)
     return [rel_ent,FI]
 
 def FI_observable(rho,G,sigma,thetabounds):
-    [_,_,probs0] = measurement.measurement_statistics(rho,sigma)
+    [_,_,probs0] = qt.measurement.measurement_statistics(rho,sigma)
     thetas = np.reshape(np.linspace(thetabounds[0],thetabounds[1],100),(1,100))
     def prob_non_vec(theta):
         U = (1j*theta[0]*G).expm()
-        state = U*state0*U.dag()
-        [_,_,probs] = measurement.measurement_statistics(state,op)
+        state = U*rho*U.dag()
+        [_,_,probs] = qt.measurement.measurement_statistics(state,sigma)
         return probs
     def probs(thetas):
         return np.apply_along_axis(prob_non_vec, axis=0, arr=thetas)
