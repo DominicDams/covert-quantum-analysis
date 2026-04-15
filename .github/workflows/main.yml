@@ -1,1 +1,13 @@
-- uses: astral-sh/ruff-action@v3
+name: main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  build-project:
+    name: Check code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint
+        uses: astral-sh/ruff-action@v3
