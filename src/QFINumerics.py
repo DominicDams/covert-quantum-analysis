@@ -1,5 +1,6 @@
 from qutip import *
 import numpy as np
+import scipy as sp
 import matplotlib.pyplot as plt
 from tqdm.autonotebook import trange
 import warnings
@@ -26,11 +27,11 @@ def QFI(rho,G):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message="invalid value encountered in divide")
         warnings.filterwarnings("ignore", message="divide by zero encountered in divide")
-        FIs = np.where(bot>0,2*top*prod/bot,0)
+        FIs = np.where(bot>0,top*prod/bot,0)
 
-    return np.sum(FIs)
+    return 2*np.sum(FIs)
 
-def genChannel(dims=[5,5,5,6], params=[.1,.1]):
+def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
     eta = params[0]
     theta = np.arccos(np.sqrt(eta))
     nth = params[1]
@@ -44,7 +45,7 @@ def genChannel(dims=[5,5,5,6], params=[.1,.1]):
     G = theta *1j*(ath.dag()*asi +asi.dag()*ath)
     # Define the beamsplitter transform
     U = G.expm()
-    pth = thermal_dm(thdims,nth)
+    pth = thermal_dm(thdims,nth,method)
     # Create a superoperator which performs the thermal mixing + tracing out
     S1=0
     for i in range(thdims):
@@ -170,3 +171,20 @@ def calc_for_state(rho,n,As,args=[12,.1,.1]):
     FI = QFI(rhom,n)
     return [rel_ent,FI]
 
+def FI_observable(rho,G,sigma,thetabounds):
+    [_,_,probs0] = measurement.measurement_statistics(rho,sigma)
+    thetas = np.reshape(np.linspace(thetabounds[0],thetabounds[1],100),(1,100))
+    def prob_non_vec(theta):
+        U = (1j*theta[0]*G).expm()
+        state = U*state0*U.dag()
+        [_,_,probs] = measurement.measurement_statistics(state,op)
+        return probs
+    def probs(thetas):
+        return np.apply_along_axis(prob_non_vec, axis=0, arr=thetas)
+    def for_jacobian(thetas):
+        return np.log(probs(thetas))
+    res = sp.differentiate.jacobian(for_jacobian,thetas)
+    dlogp = res.df[:,0,:]
+    probs = probs(thetas)
+    expects = np.sum(dlogp**2*probs,axis=0)
+    return np.max(expects)
