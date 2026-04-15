@@ -64,9 +64,6 @@ def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
     return chan
 
 
-# In[4]:
-
-
 def searchForState(psi0=qt.basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20000, dims=[5,5,5,6], params=[.1,.1]):
     # Set initial parameters
     eta = params[0]
@@ -184,4 +181,6 @@ def FI_observable(rho,G,sigma,thetabounds):
     dlogp = res.df[:,0,:]
     probs = probs(thetas)
     expects = np.sum(dlogp**2*probs,axis=0)
-    return np.max(expects)
+    maxval = np.max(expects)
+    thetamax = thetas[0][np.argmax(expects)]
+    return [maxval, thetamax]
