@@ -42,11 +42,11 @@ def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
     """Generate a channel that represents mixing the first mode (signal) with a thermal state, and making a discarded projective measurement on the witness state
     Parameters
     ----------
-    dims: int[4]
+    dims: int[4], default [5,5,5,6]
         The size of the Fock spaces for respectively, the thermal modes, the signal mode, the idler mode, and the classical ``witness'' mode
-    params: float[2]
+    params: float[2], default [.1,.1]
         The transmisivity of the beamsplitter and the average photon number of the thermal field
-    method: string literal
+    method: string literal, default 'operator'
         Either `operator' or `analytic', determines the method used to generate the thermal state as seen in qutip's thermal_dm method
     Returns
     -------
