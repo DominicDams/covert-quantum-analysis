@@ -188,6 +188,24 @@ def calc_for_state(rho,n,As,args=[12,.1,.1]):
     return [rel_ent,FI]
 
 def FI_observable(rho,G,sigma,thetabounds):
+    """Calculate the classical Fisher Information using QuTiP and an observable representing our measurement
+    Parameters
+    ----------
+    rho: QuTiP Qobj (oper)
+        The state we want to calculate the FI for
+    G: QuTiP Qobj (oper)
+        The generator of the transformation we are looking for the FI of
+    sigma: QuTiP Qobj (oper)
+        The observable representing our measurment
+    thetabounds: tuple (int,int)
+        The minimum and maximum value to check for our parameter theta
+    Returns
+    -------
+    Fisher Information: numpy.float
+        The classical Fisher Information
+    Theta val: numpy.float
+        The value of our parameter that maximizes the Fisher Information
+    """
     [_,_,probs0] = qt.measurement.measurement_statistics(rho,sigma)
     thetas = np.reshape(np.linspace(thetabounds[0],thetabounds[1],100),(1,100))
     def prob_non_vec(theta):
