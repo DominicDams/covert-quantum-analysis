@@ -25,7 +25,7 @@ jobs:
           environment-file: environment.yaml
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
-      - run: conda list
+      - run: conda activate research
       - run: pdoc -o docs/ ...
 
       - uses: actions/upload-pages-artifact@v4
