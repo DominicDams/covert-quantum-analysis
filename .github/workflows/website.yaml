@@ -27,8 +27,8 @@ jobs:
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - run: |
-          conda info
-          conda env list
+          conda init
+          conda activate research
       - run: |
           pdoc -o docs/ ...
 
