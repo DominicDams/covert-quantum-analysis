@@ -5,10 +5,18 @@ from tqdm.autonotebook import trange
 import warnings
 
 def QFI(rho,G):
-    # Input:
-    #  - rho: the state
-    #  - G: the generator of a Unitrary transform
-    # Output: the QFI of the state with respect to that transform
+    """Calculate the Quantum Fisher Information using QuTiP
+    Parameters
+    ----------
+    rho: QuTiP Qobj (oper)
+        The state you want to calculate the Quantum Fisher Information for
+    G: QuTiP Qobj (oper)
+        The generator of the transformation you are calculating the Quantum Fisher Information of
+    Returns
+    -------
+    numpy.float
+        The Quantum Fisher Information
+    """
 
     # Get the eigenstates, which gives us all the info we need to get the QFI
     (lambdas, Uw) = rho.eigenstates(output_type='oper')
@@ -31,6 +39,20 @@ def QFI(rho,G):
     return 2*np.sum(FIs)
 
 def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
+    """Generate a channel that represents mixing the first mode (signal) with a thermal state, and making a discarded projective measurement on the witness state
+    Parameters
+    ----------
+    dims: int[4]
+        The size of the Fock spaces for respectively, the thermal modes, the signal mode, the idler mode, and the classical ``witness'' mode
+    params: float[2]
+        The transmisivity of the beamsplitter and the average photon number of the thermal field
+    method: string literal
+        Either `operator' or `analytic', determines the method used to generate the thermal state as seen in qutip's thermal_dm method
+    Returns
+    -------
+    QuTiP Qobj (super)
+        A qutip superoperator that acts on states to apply the above defined channel
+    """
     eta = params[0]
     theta = np.arccos(np.sqrt(eta))
     nth = params[1]

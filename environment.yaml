@@ -44,6 +44,7 @@ dependencies:
   - ipython_pygments_lexers=1.1.1=pyhd8ed1ab_0
   - ipywidgets=8.1.8=pyhd8ed1ab_0
   - jedi=0.19.2=pyhd8ed1ab_1
+  - jinja2=3.1.6=pyhcf101f3_1
   - jupyter_client=8.8.0=pyhcf101f3_0
   - jupyter_core=5.9.1=pyhc90fa1f_0
   - jupyterlab_widgets=3.0.16=pyhcf101f3_1
@@ -110,6 +111,8 @@ dependencies:
   - libxml2-16=2.15.2=hca6bf5a_0
   - libxslt=1.1.43=h711ed8c_1
   - libzlib=1.3.2=h25fd6f3_2
+  - markdown2=2.5.5=pyhcf101f3_0
+  - markupsafe=3.0.3=py313h3dea7bd_1
   - matplotlib=3.10.8=py313h78bf25f_0
   - matplotlib-base=3.10.8=py313h683a580_0
   - matplotlib-inline=0.2.1=pyhd8ed1ab_0
@@ -123,10 +126,11 @@ dependencies:
   - numpy=2.4.3=py313hf6604e3_0
   - openjpeg=2.5.4=h55fea9a_0
   - openldap=2.6.10=hbde042b_1
-  - openssl=3.6.1=h35e630c_1
+  - openssl=3.6.2=h35e630c_0
   - packaging=26.0=pyhcf101f3_0
   - parso=0.8.6=pyhcf101f3_0
   - pcre2=10.47=haa7fec5_0
+  - pdoc=16.0.0=pyhd8ed1ab_0
   - pexpect=4.9.0=pyhd8ed1ab_1
   - pillow=12.2.0=py313h80991f8_0
   - pip=26.0.1=pyh145f28c_0
