@@ -136,24 +136,24 @@ def searchForState(psi0=qt.basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20
 
 
 def calc_for_state(rho,n,As,args=[12,.1,.1]):
-    # Input
-    #  - rho: the initial state. The first field should be the signal field,
-    #         all ancilla fields aren't impacted by our procedure
-    #  - n: the number operator for the signal field
-    #  - As: the annihilation operator for the signal field
-    #  - args: an array of arguments that define our setup
-    #    - 0: the number of dimensions to use for the thermal
-    #         fields truncated Fock space
-    #    - 1: the average photon number in the thermal field
-    #    - 2: the transmisivity of our beamsplitter
-    # Output
-    #  - rel_ent: the quantum relative entropy between our state after mixing
-    #             with thermal background, and the field without our input state
-    #  - QFI: the quantum Fisher information of our state after mixing with
-    #         thermal background
-    # Description: Simulates a signal field mixed with a thermal background,
-    #              and gives a measure of the effectiveness of a measurement
-    #              and the detectability of our measurement to an adversary
+    """Calculate the QFI and the relative entropy with our noisy channel for a given state
+    Parameters
+    ----------
+    rho: QuTiP Qobj (oper)
+        The state before the channel
+    n: QuTiP Qobj (oper)
+        The number operator for the signal field
+    As: QuTiP Qobj (oper)
+        The annihilation operator for the signal field
+    args: float[4]
+        Respectively, the number of dimensions for the thermal field, the average photon number of the thermal field, and the transmisivity of the beamsplitter
+    Returns
+    -------
+    rel_ent: float
+        the quantum relative entropy between our state after mixing with thermal background, and the field without our input state
+    QFI: float
+        the quantum Fisher information of our state after mixing with our thermal background
+    """
 
     # Here we extract our parameters from our argument
     thdims = args[0]
