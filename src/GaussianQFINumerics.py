@@ -139,7 +139,7 @@ def FIE(FIM,a):
     return FIE
     #print(FIE)
     #print(np.linalg.inv(FIM))
-def vectorized_QFIM(σfunc,dσfuncs,arggrid):
+def vectorized_QFIM(σfunc,dσfuncs,*args):
     """Calculate the Quantum Fisher Information Matrix for a grid of points
     Parameters
     ----------
@@ -147,8 +147,8 @@ def vectorized_QFIM(σfunc,dσfuncs,arggrid):
         The function that gives your covariance matrix given *args
     dsigmafuncs: function(*args)
         An array of functions that give derivatives of the covaraince matrix given *args
-    arggrid: *args[]
-        A set of meshgrids generated for your array of input arguments
+    args: *args[]
+        Arrays for each argument being evaluated
     Returns
     -------
     np.cdouble[arggrid.size,len(dsigmafuncs),len(dsigmafuncs)]
@@ -156,15 +156,15 @@ def vectorized_QFIM(σfunc,dσfuncs,arggrid):
     """
     # This code is very general, and as a result some of this needs more explination than normal
     FIMlen = len(dσfuncs)
-    basesize = arggrid[0].shape
-    QFIMs = np.zeros(basesize+(FIMlen,FIMlen),np.cdouble)
+    basesize = [len(arg) for arg in args]
+    QFIMs = np.zeros(basesize+[FIMlen,FIMlen],np.cdouble)
     # Create an iterable that goes through all points in our grid
-    iterable = np.ndindex(basesize)
+    iterable = np.ndindex(tuple(basesize))
     total = np.prod(basesize)
     # We use tqdm here since this can potentially take a while to run
-    for arg in tqdm(iterable,total=total):
+    for it in tqdm(iterable,total=total):
         # For each meshgrid we grab it's value at our current point
-        gridelem = [grid[*arg] for grid in arggrid]
+        gridelem = [args[i][it[i]] for i in range(len(basesize))]
         # Then evaluate each function at these values
         σval = σfunc(*gridelem)
         dσs = [dσfunc(*gridelem) for dσfunc in dσfuncs]
@@ -173,5 +173,5 @@ def vectorized_QFIM(σfunc,dσfuncs,arggrid):
         #    if len(w) >0:
         #        print(gridelem)
         # Finally record the matrix at the proper point in the grid
-        QFIMs[*arg,:,:] = FIMval
+        QFIMs[*it,:,:] = FIMval
     return QFIMs
