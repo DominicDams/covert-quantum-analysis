@@ -1,15 +1,9 @@
 
 import numpy as np
 import scipy as sp
-import matplotlib.pyplot as plt
 from tqdm.autonotebook import tqdm
-import itertools
-#import cProfile, pstats, io
-#from pstats import SortKey
 import warnings
 
-#%matplotlib widget
-# Williamson Decomp
 Ω = np.array([
         [0,1,0,0,0,0],
         [-1,0,0,0,0,0],
@@ -67,7 +61,7 @@ def _SLD_precomp(σ):
     [S,ν] = will_decomp(σ)
     Sinv = -Ω@np.transpose(S)@Ω
     SinvT = np.transpose(Sinv)
-    def M(j,k,l):
+    def M(j,k,m):
         Mval = np.zeros([6,6])
         outputs = {
             0: [[0,1],[-1,0]],
@@ -75,9 +69,9 @@ def _SLD_precomp(σ):
             2: [[1,0],[0,1]],
             3: [[1,0],[0,-1]]
         }
-        Mval[(2*j):(2*j+2),(2*k):(2*k+2)] = outputs[l]
+        Mval[(2*j):(2*j+2),(2*k):(2*k+2)] = outputs[m]
         return Mval
-    newM = [[[SinvT@M(j,k,l)@Sinv for l in range(3)] for k in range(3)] for j in range(3)]
+    newM = [[[SinvT@M(j,k,m)@Sinv for m in range(3)] for k in range(3)] for j in range(3)]
     return [newM,ν]
     
 def SLD(σ,dσ,precomp = None):
@@ -102,7 +96,7 @@ def SLD(σ,dσ,precomp = None):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message="invalid value encountered in divide")
         warnings.filterwarnings("ignore", message="divide by zero encountered in divide")
-        Lsum = [[[ newM[i][j][l] * 1/(ν[i]*ν[j] - (-1)**l)*np.linalg.trace(newM[i][j][l]@dσ) for i in range(3)] for j in range(3)] for l in range(3)]
+        Lsum = [[[ newM[i][j][k] * 1/(ν[i]*ν[j] - (-1)**k)*np.linalg.trace(newM[i][j][k]@dσ) for i in range(3)] for j in range(3)] for k in range(3)]
     L = np.nansum(Lsum,axis=(0,1,2))
     return L
     #print(ν)
@@ -130,15 +124,15 @@ def FIM(σ,dσs):
     #FIη21 = np.linalg.trace(Lη2@dσdη1)/2
     #FIM = np.array([[FIη11,FIη12],[FIη21,FIη22]])
     #print(FIM)
-def FIE(FIM,a):
-    # Currently only written for 2 parameter estimation
-    aeff = a #if (np.abs(a) > .5) else (-a+ np.sign(a))
-    Bm1 = [[aeff,0],[np.sqrt(1-aeff**2),1]]
-    Qtm1 = np.transpose(Bm1)@np.linalg.inv(FIM)@Bm1
-    FIE = 1/Qtm1[0,0]
-    return FIE
-    #print(FIE)
-    #print(np.linalg.inv(FIM))
+#def FIE(FIM,a):
+#    # Currently only written for 2 parameter estimation
+#    aeff = a #if (np.abs(a) > .5) else (-a+ np.sign(a))
+#    Bm1 = [[aeff,0],[np.sqrt(1-aeff**2),1]]
+#    Qtm1 = np.transpose(Bm1)@np.linalg.inv(FIM)@Bm1
+#    FIE = 1/Qtm1[0,0]
+#    return FIE
+#    #print(FIE)
+#    #print(np.linalg.inv(FIM))
 def vectorized_QFIM(σfunc,dσfuncs,*args):
     """Calculate the Quantum Fisher Information Matrix for a grid of points
     Parameters
