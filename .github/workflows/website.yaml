@@ -19,14 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: research
-          environment-file: environment.yaml
+      - uses: astral-sh/setup-uv
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - run: |
-          conda run -n research pdoc -d numpy -o docs/ src/*.py
+          uv run --with pdoc pdoc -d numpy -o docs/ src/*.py
 
       - uses: actions/upload-pages-artifact@v4
         with:
