@@ -27,4 +27,6 @@ jobs:
       - name: actions-template-sync
         uses: AndreasAugustin/actions-template-sync@v2
         with:
+          source_gh_token: ${{ secrets.GITHUB_TOKEN }}
+          target_gh_token: ${{ secrets.TEMPLATE_WORKFLOW_SECRET }}
           source_repo_path: Smith-Raymer/lab-template
