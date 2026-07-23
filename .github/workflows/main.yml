@@ -9,4 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Lint
-        uses: astral-sh/ruff-action@v4
+        uses: astral-sh/ruff-action@v4.0.0
