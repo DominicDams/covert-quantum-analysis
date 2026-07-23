@@ -23,8 +23,7 @@ jobs:
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - run: |
-          ls -la src
-          to_document=$(find -path ./src -iname '*.py') && echo $to_document
+          to_document=$(find src -iname '*.py') && echo $to_document
           uv run --with pdoc pdoc -d numpy -o docs/ $to_document
 
       - uses: actions/upload-pages-artifact@v4
