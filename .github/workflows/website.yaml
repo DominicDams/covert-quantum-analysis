@@ -24,7 +24,7 @@ jobs:
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - run: |
           find -path ${{github.workspace}}/src -name *.py
-          to_document=$(find -path src -name *.py)
+          to_document=$(find -path $github.workspace/src -name *.py)
           echo $to_document
           uv run --with pdoc pdoc -d numpy -o docs/ $to_document
 
