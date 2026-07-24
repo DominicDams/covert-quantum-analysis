@@ -19,16 +19,13 @@ jobs:
       # To use this repository's private action, you must check out the repository
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          # submodules: true
-          persist-credentials: false # needed
         # https://github.com/actions/checkout#usage
         # uncomment if you use submodules within the repository
-        # with:
+        with:
         #   submodules: true
-
+          persist-credentials: false # needed
       - name: actions-template-sync
         uses: AndreasAugustin/actions-template-sync@v2
         with:
-          target_gh_token: ${{ secrets.TEMPLATE_WORKFLOW_SECRET }}
           source_repo_path: Smith-Raymer/lab-template
+          target_gh_token: ${{ secrets.TEMPLATE_UPDATE_TOKEN }}
