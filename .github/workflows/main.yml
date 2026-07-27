@@ -13,5 +13,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Lint
-        uses: actions/checkout@v7
-        uses: astral-sh/ruff-action@v4.1.0
+      - uses: actions/checkout@v7
+      - uses: astral-sh/ruff-action@v4.1.0
