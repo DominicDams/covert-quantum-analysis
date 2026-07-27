@@ -3,13 +3,15 @@ on:
   push:
   pull_request:
     branches: [ "main" ]
+    
+permissions:
+  contents: read
+  
 jobs:
   build-project:
     name: Check code
     runs-on: ubuntu-latest
     steps:
       - name: Lint
+        uses: actions/checkout@v7
         uses: astral-sh/ruff-action@v4.1.0
-        with:
-          args: --version
-      - run: ruff check
