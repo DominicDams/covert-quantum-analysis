@@ -10,4 +10,5 @@ jobs:
     steps:
       - name: Lint
         uses: astral-sh/ruff-action@v4.1.0
-        src: "./src/**/*.py ./notebooks/**/*.ipnb"
+        with:
+          src: "./src/**/*.py ./notebooks/**/*.ipnb"
