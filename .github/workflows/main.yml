@@ -11,4 +11,5 @@ jobs:
       - name: Lint
         uses: astral-sh/ruff-action@v4.1.0
         with:
-          src: "./**/*.py ./**/*.ipynb"
+          args: --version
+      - run: ruff check
