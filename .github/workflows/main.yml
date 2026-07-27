@@ -8,10 +8,9 @@ permissions:
   contents: read
   
 jobs:
-  build-project:
+  lint:
     name: Check code
     runs-on: ubuntu-latest
     steps:
-      - name: Lint
       - uses: actions/checkout@v7
       - uses: astral-sh/ruff-action@v4.1.0
