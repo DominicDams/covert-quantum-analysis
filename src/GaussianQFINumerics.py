@@ -1,7 +1,8 @@
+import warnings
+
 import numpy as np
 import scipy as sp
 from tqdm.autonotebook import tqdm
-import warnings
 
 Ω = np.array([
         [0,1,0,0,0,0],

@@ -1,8 +1,10 @@
-import qutip as qt
+import warnings
+
 import numpy as np
+import qutip as qt
 import scipy as sp
 from tqdm.autonotebook import trange
-import warnings
+
 
 def QFI(rho,G):
     """Calculate the Quantum Fisher Information using QuTiP
@@ -38,7 +40,7 @@ def QFI(rho,G):
 
     return 2*np.sum(FIs)
 
-def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
+def genChannel(dims=None, params=None, method = 'operator'):
     """Generate a channel that represents mixing the first mode (signal) with a thermal state, and making a discarded projective measurement on the witness state
     Parameters
     ----------
@@ -53,6 +55,10 @@ def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
     QuTiP Qobj (super)
         A qutip superoperator that acts on states to apply the above defined channel
     """
+    if dims == None:
+        dims=[5,5,5,6]
+    if params == None:
+        params=[.1,.1]
     eta = params[0]
     theta = np.arccos(np.sqrt(eta))
     nth = params[1]
@@ -86,8 +92,14 @@ def genChannel(dims=[5,5,5,6], params=[.1,.1],method = 'operator'):
     return chan
 
 
-def searchForState(psi0=qt.basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20000, dims=[5,5,5,6], params=[.1,.1]):
+def searchForState(psi0=None, max_entropy=.01, epsilon=.1, iters=20000, dims=None, params=None):
     # Set initial parameters
+    if psi0 == None:
+        psi0=qt.basis([5,5,6])
+    if dims == None:
+        dims=[5,5,5,6]
+    if params == None:
+        params=[.1,.1]
     eta = params[0]
     nth = params[1]
     sdims = dims[1]
@@ -135,7 +147,7 @@ def searchForState(psi0=qt.basis([5,5,6]), max_entropy=.01, epsilon=.1, iters=20
     return state
 
 
-def calc_for_state(rho,n,As,args=[12,.1,.1]):
+def calc_for_state(rho,n,As,args=None):
     """Calculate the QFI and the relative entropy with our noisy channel for a given state
     Parameters
     ----------
@@ -154,6 +166,8 @@ def calc_for_state(rho,n,As,args=[12,.1,.1]):
     QFI: float
         the quantum Fisher information of our state after mixing with our thermal background
     """
+    if args == None:
+        args=[12,.1,.1]
 
     # Here we extract our parameters from our argument
     thdims = args[0]
@@ -206,7 +220,7 @@ def FI_observable(rho,G,sigma,thetabounds):
     Theta val: numpy.float
         The value of our parameter that maximizes the Fisher Information
     """
-    [_,_,probs0] = qt.measurement.measurement_statistics(rho,sigma)
+    #[_,_,probs0] = qt.measurement.measurement_statistics(rho,sigma)
     thetas = np.reshape(np.linspace(thetabounds[0],thetabounds[1],100),(1,100))
     def prob_non_vec(theta):
         U = (1j*theta[0]*G).expm()
