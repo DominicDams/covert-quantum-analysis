@@ -1,15 +1,11 @@
 [project]
-name = "covert-quantum-analysis"
+name = "lab-template"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "cvxpy>=1.9.2",
     "matplotlib>=3.11.1",
     "numpy>=2.5.1",
-    "qutip>=5.3.0",
     "scipy>=1.18.0",
-    "sympy>=1.14.0",
-    "tqdm>=4.69.0",
 ]
 
 [dependency-groups]
@@ -17,5 +13,3 @@ dev = [
     "ipykernel>=7.3.0",
     "ipympl>=0.10.0",
 ]
-[tool.ruff]
-include = ["pyproject.toml", "src/**/*.py", "notebooks/**/*.ipynb"]
