@@ -3,6 +3,7 @@ name = "covert-quantum-analysis"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
+    "bqplot>=0.13.1",
     "cvxpy>=1.9.2",
     "matplotlib>=3.11.1",
     "mpmath>=1.3.0",
