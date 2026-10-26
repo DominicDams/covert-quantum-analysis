@@ -1,5 +1,6 @@
 import qutip
 
+import RelEnts as RelEnts
 from GaussianQFINumerics import FIM as FIM
 from GaussianQFINumerics import SLD as SLD
 from GaussianQFINumerics import vectorized_QFIM as vectorized_QFIM
